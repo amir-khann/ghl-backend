@@ -18,7 +18,11 @@ A Node.js backend server for processing payments through Tap payment gateway int
 npm install
 ```
 
-2. Start the server:
+2. Set up environment variables:
+
+```
+
+3. Start the server:
 ```bash
 npm start
 ```
