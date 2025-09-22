@@ -1,10 +1,71 @@
 // server.js
 const express = require('express');
 const fetch = require('node-fetch');
+const cors = require('cors');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
 const app = express();
+
+// CORS configuration
+app.use(cors({
+  origin: '*', // Allow all origins in development
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
-// Test route to check if deployment is running
+// Swagger configuration
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'GHL Backend API',
+      version: '1.0.0',
+      description: 'Backend server for GHL payment processing with Tap integration',
+    },
+    servers: [
+      {
+        url: 'http://localhost:3000',
+        description: 'Development server',
+      },
+    ],
+  },
+  apis: ['./server.js'], // Path to the API files
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health check endpoint
+ *     description: Check if the server is running and get server status
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: Server is running successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 message:
+ *                   type: string
+ *                   example: GHL Backend is running successfully
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 environment:
+ *                   type: string
+ *                   example: development
+ */
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
@@ -14,7 +75,43 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Test route for basic API functionality
+/**
+ * @swagger
+ * /test:
+ *   get:
+ *     summary: API functionality test
+ *     description: Test endpoint to verify API is working correctly
+ *     tags: [Test]
+ *     responses:
+ *       200:
+ *         description: API is working correctly
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: API is working correctly
+ *                 server:
+ *                   type: string
+ *                   example: GHL Backend
+ *                 version:
+ *                   type: string
+ *                   example: 1.0.0
+ *                 endpoints:
+ *                   type: object
+ *                   properties:
+ *                     health:
+ *                       type: string
+ *                       example: GET /health
+ *                     test:
+ *                       type: string
+ *                       example: GET /test
+ *                     createCharge:
+ *                       type: string
+ *                       example: POST /create-charge
+ */
 app.get('/test', (req, res) => {
   res.status(200).json({
     message: 'API is working correctly',
@@ -28,7 +125,88 @@ app.get('/test', (req, res) => {
   });
 });
 
-// Payment charge creation endpoint
+/**
+ * @swagger
+ * /create-charge:
+ *   post:
+ *     summary: Create payment charge
+ *     description: Creates a payment charge through Tap payment gateway
+ *     tags: [Payment]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - amount
+ *               - currency
+ *               - email
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Card token from Tap SDK
+ *                 example: "tok_1234567890"
+ *               amount:
+ *                 type: number
+ *                 description: Payment amount
+ *                 example: 100
+ *               currency:
+ *                 type: string
+ *                 description: Currency code
+ *                 example: "KWD"
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Customer email address
+ *                 example: "customer@example.com"
+ *     responses:
+ *       200:
+ *         description: Payment charge created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: "chg_1234567890"
+ *                 status:
+ *                   type: string
+ *                   example: "CAPTURED"
+ *                 amount:
+ *                   type: number
+ *                   example: 100
+ *                 currency:
+ *                   type: string
+ *                   example: "KWD"
+ *       400:
+ *         description: Bad request - missing required fields or invalid data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Missing required fields"
+ *                 required:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["token", "amount", "currency", "email"]
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "TAP_API_KEY environment variable is not configured"
+ */
 app.post('/create-charge', async (req, res) => {
   const { token, amount, currency, email } = req.body;
 
@@ -72,7 +250,33 @@ app.post('/create-charge', async (req, res) => {
   }
 });
 
-// Root route
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: API root endpoint
+ *     description: Welcome message and API information
+ *     tags: [General]
+ *     responses:
+ *       200:
+ *         description: API information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Welcome to GHL Backend API
+ *                 version:
+ *                   type: string
+ *                   example: 1.0.0
+ *                 endpoints:
+ *                   type: object
+ *                 documentation:
+ *                   type: string
+ *                   example: See /api-docs for Swagger documentation
+ */
 app.get('/', (req, res) => {
   res.status(200).json({
     message: 'Welcome to GHL Backend API',
@@ -80,9 +284,10 @@ app.get('/', (req, res) => {
     endpoints: {
       health: 'GET /health',
       test: 'GET /test',
-      createCharge: 'POST /create-charge'
+      createCharge: 'POST /create-charge',
+      swagger: 'GET /api-docs'
     },
-    documentation: 'See README.md for API documentation'
+    documentation: 'See /api-docs for Swagger documentation'
   });
 });
 
@@ -91,4 +296,5 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/health`);
   console.log(`Test endpoint: http://localhost:${PORT}/test`);
+  console.log(`Swagger docs: http://localhost:${PORT}/api-docs`);
 });

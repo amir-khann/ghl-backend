@@ -10,6 +10,10 @@ A Node.js backend server for processing payments through Tap payment gateway int
 - Tap payment gateway integration
 - Payment charge creation endpoint
 - JSON request/response handling
+- CORS support for cross-origin requests
+- Swagger API documentation
+- Health check and test endpoints
+- Vercel serverless deployment ready
 
 ## Setup
 
@@ -57,6 +61,7 @@ vercel
    - `https://your-project.vercel.app/health`
    - `https://your-project.vercel.app/test`
    - `https://your-project.vercel.app/create-charge`
+   - `https://your-project.vercel.app/api-docs` (Swagger documentation)
 
 ## API Endpoints
 
@@ -127,6 +132,27 @@ Creates a payment charge through Tap payment gateway.
 **Response:**
 - Success: Returns Tap API response with charge details
 - Error: Returns error message with appropriate HTTP status
+
+## API Documentation
+
+### Swagger UI
+
+Interactive API documentation is available at:
+- **Local Development**: `http://localhost:3000/api-docs`
+- **Vercel Deployment**: `https://your-project.vercel.app/api-docs`
+
+The Swagger UI provides:
+- Complete API endpoint documentation
+- Interactive testing interface
+- Request/response examples
+- Schema definitions
+
+### CORS Support
+
+The API includes CORS middleware to handle cross-origin requests:
+- Allows all origins (`*`) for development
+- Supports common HTTP methods (GET, POST, PUT, DELETE, OPTIONS)
+- Includes standard headers (Content-Type, Authorization)
 
 ## Environment
 

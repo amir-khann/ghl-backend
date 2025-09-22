@@ -12,7 +12,10 @@
     "dependencies": {
         "express": "^4.21.2",
         "node-fetch": "^2.7.0",
-        "serverless-http": "^4.0.0"
+        "serverless-http": "^4.0.0",
+        "cors": "^2.8.5",
+        "swagger-ui-express": "^5.0.0",
+        "swagger-jsdoc": "^6.2.8"
     },
     "devDependencies": {
         "nodemon": "^3.0.1"
