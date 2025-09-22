@@ -13,13 +13,16 @@ A Node.js backend server for processing payments through Tap payment gateway int
 
 ## Setup
 
+### Local Development
+
 1. Install dependencies:
 ```bash
 npm install
 ```
 
 2. Set up environment variables:
-
+```bash
+export TAP_API_KEY=your_tap_api_key_here
 ```
 
 3. Start the server:
@@ -33,6 +36,27 @@ npm run dev
 ```
 
 The server will run on port 3000.
+
+### Vercel Deployment
+
+1. Install Vercel CLI:
+```bash
+npm i -g vercel
+```
+
+2. Deploy to Vercel:
+```bash
+vercel
+```
+
+3. Set environment variables in Vercel dashboard:
+   - Go to your project settings
+   - Add `TAP_API_KEY` environment variable
+
+4. Your API will be available at:
+   - `https://your-project.vercel.app/health`
+   - `https://your-project.vercel.app/test`
+   - `https://your-project.vercel.app/create-charge`
 
 ## API Endpoints
 
@@ -61,9 +85,10 @@ Health check endpoint to verify if the deployment is running.
 ```json
 {
   "status": "OK",
-  "message": "GHL Backend is running successfully",
+  "message": "GHL Backend is running successfully on Vercel",
   "timestamp": "2024-01-01T00:00:00.000Z",
-  "environment": "production"
+  "environment": "production",
+  "platform": "Vercel Serverless"
 }
 ```
 
