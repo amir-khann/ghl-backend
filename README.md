@@ -36,6 +36,55 @@ The server will run on port 3000.
 
 ## API Endpoints
 
+### GET /
+
+Root endpoint that provides API information and available endpoints.
+
+**Response:**
+```json
+{
+  "message": "Welcome to GHL Backend API",
+  "version": "1.0.0",
+  "endpoints": {
+    "health": "GET /health",
+    "test": "GET /test",
+    "createCharge": "POST /create-charge"
+  }
+}
+```
+
+### GET /health
+
+Health check endpoint to verify if the deployment is running.
+
+**Response:**
+```json
+{
+  "status": "OK",
+  "message": "GHL Backend is running successfully",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "environment": "production"
+}
+```
+
+### GET /test
+
+Test endpoint to verify API functionality.
+
+**Response:**
+```json
+{
+  "message": "API is working correctly",
+  "server": "GHL Backend",
+  "version": "1.0.0",
+  "endpoints": {
+    "health": "GET /health",
+    "test": "GET /test",
+    "createCharge": "POST /create-charge"
+  }
+}
+```
+
 ### POST /create-charge
 
 Creates a payment charge through Tap payment gateway.
